@@ -11,7 +11,7 @@ func metadata(c *gin.Context) {
 }
 
 func index(c *gin.Context) {
-	c.String(200, "ok")
+	c.String(200, "ok\n")
 }
 
 func SetupRouter() *gin.Engine {
