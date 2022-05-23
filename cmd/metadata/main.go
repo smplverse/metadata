@@ -1,7 +1,11 @@
 package main
 
-import "github.com/piotrostr/metadata/pkg/server"
+import (
+	"github.com/piotrostr/metadata/pkg/db"
+	_ "github.com/piotrostr/metadata/pkg/server"
+)
 
 func main() {
-	server.Run()
+	db.Connect()
+	// server.Run()
 }

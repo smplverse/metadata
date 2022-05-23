@@ -1,24 +1,23 @@
 package db
 
 import (
+	"context"
 	"log"
 
-	badger "github.com/dgraph-io/badger/v3"
+	"cloud.google.com/go/firestore"
 )
 
-func Connect() (db *badger.DB, err error) {
-	db, err = badger.Open(badger.DefaultOptions("/tmp/badger"))
+const PROJECT_ID = "smplverse-metadata"
 
+func Connect() {
+	ctx := context.Background()
+
+	client, err := firestore.NewClient(ctx, PROJECT_ID)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal()
 	}
 
-	err = db.View(func(txn *badger.Txn) error {
-		// Your code here…
-		return nil
-	})
+	m := client.Collection("Metadata")
 
-	defer db.Close()
-
-	return
+	log.Print(m)
 }
