@@ -1,0 +1,40 @@
+name: "Build, go vet, lint and test"
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  basic-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+        
+    - name: Build
+      run: go build ./...
+      
+    - name: Run vet & lint
+      run: |
+        go vet .
+        golint .
+
+    - name: Run tests
+      run: go test  -coverprofile=c.out -covermode=atomic ./...
+
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v1.0.2
+      with:
+        file: ./c.out
+        flags: unittests
+        name: codecov-umbrella
