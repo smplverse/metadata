@@ -13,8 +13,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRequiresApiKeyEnvVarSet(t *testing.T) {
+	os.Unsetenv("METADATA_API_KEY")
+	defer os.Setenv("METADATA_API_KEY", "secret")
+
+	router, err := server.SetupRouter()
+	assert.Equal(t, err, server.ErrUnsetApiKey)
+	assert.Nil(t, router)
+}
+
 func TestPingRoute(t *testing.T) {
-	router := server.SetupRouter()
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/", nil)
@@ -24,7 +34,8 @@ func TestPingRoute(t *testing.T) {
 }
 
 func TestNonExistingMetadata(t *testing.T) {
-	router := server.SetupRouter()
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/52", nil)
@@ -32,13 +43,14 @@ func TestNonExistingMetadata(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	var entry metadata.Entry
-	err := json.Unmarshal(w.Body.Bytes(), &entry)
+	err = json.Unmarshal(w.Body.Bytes(), &entry)
 	assert.Nil(t, err)
 	assert.Equal(t, &entry, &metadata.BlankEntry)
 }
 
 func Test401ForUnauthorized(t *testing.T) {
-	router := server.SetupRouter()
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
 
 	w := httptest.NewRecorder()
 	emptyEntry := &metadata.Entry{}
@@ -57,7 +69,8 @@ func Test401ForUnauthorized(t *testing.T) {
 }
 
 func TestAddingToMetadataWorks(t *testing.T) {
-	router := server.SetupRouter()
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
 
 	w := httptest.NewRecorder()
 	emptyEntry := &metadata.Entry{}

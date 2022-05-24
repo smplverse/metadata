@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -11,17 +12,20 @@ import (
 	"github.com/piotrostr/metadata/pkg/metadata"
 )
 
-func SetupRouter() *gin.Engine {
+var ErrUnsetApiKey = errors.New("No METADATA_API_KEY environment variable set")
+
+func SetupRouter() (r *gin.Engine, err error) {
 	gin.SetMode(gin.ReleaseMode)
 
 	apiKey := os.Getenv("METADATA_API_KEY")
 	if apiKey == "" {
-		log.Fatalln("env var METADATA_API_KEY not set")
+		err = ErrUnsetApiKey
+		return
 	}
 
 	m := metadata.New()
 
-	r := gin.Default()
+	r = gin.Default()
 
 	r.GET("/:tokenId", func(c *gin.Context) {
 		tokenId := c.Param("tokenId")
@@ -63,11 +67,5 @@ func SetupRouter() *gin.Engine {
 		c.Status(http.StatusCreated)
 	})
 
-	return r
-}
-
-func Run() {
-	r := SetupRouter()
-	log.Println("running on 8080")
-	r.Run(":8080")
+	return
 }
