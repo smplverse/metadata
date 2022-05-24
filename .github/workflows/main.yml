@@ -26,8 +26,8 @@ jobs:
       
     - name: Run vet & lint
       run: |
-        go vet .
-        golint .
+        go vet ./...
+        golint ./...
 
     - name: Run tests
       run: go test  -coverprofile=c.out -covermode=atomic ./...

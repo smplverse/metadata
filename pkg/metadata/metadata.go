@@ -31,7 +31,7 @@ type Attribute struct {
 	Value     string `json:"value,omitempty"`
 }
 
-var clusteredOnes = []string{
+var _ = []string{
 	"037544",
 	"069701",
 	"099370",
