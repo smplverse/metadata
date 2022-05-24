@@ -19,7 +19,7 @@ func SetupRouter() *gin.Engine {
 		log.Fatalln("env var METADATA_API_KEY not set")
 	}
 
-	m := metadata.Metadata{}
+	m := metadata.New()
 
 	r := gin.Default()
 
@@ -60,6 +60,7 @@ func SetupRouter() *gin.Engine {
 		}
 
 		m.Add(tokenId, entry)
+		c.Status(http.StatusCreated)
 	})
 
 	return r
