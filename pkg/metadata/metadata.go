@@ -50,4 +50,6 @@ func (m *Metadata) Get(tokenId string) *Entry {
 	}
 }
 
-func (m *Metadata) Add(tokenId string, entry Entry) {}
+func (m *Metadata) Add(tokenId string, entry Entry) {
+	m.entries[tokenId] = entry
+}
