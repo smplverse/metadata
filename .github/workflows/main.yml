@@ -1,4 +1,4 @@
-name: "Build, go vet, lint and test"
+name: "CI/CD"
 
 on:
   push:
@@ -7,7 +7,40 @@ on:
     branches: [ master ]
 
 jobs:
-  basic-checks:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: go get -u golang.org/x/lint/golint
+        
+    - name: Build
+      run: go build ./...
+      
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: go get -u golang.org/x/lint/golint
+        
+    - name: Run vet & lint
+      run: |
+        go vet ./...
+        golint ./...
+
+
+  test:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
@@ -18,16 +51,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        go version
-        go get -u golang.org/x/lint/golint
-        
-    - name: Build
-      run: go build ./...
-      
-    - name: Run vet & lint
-      run: |
-        go vet ./...
-        golint ./...
+        go mod tidy
 
     - name: Run tests
       run: go test  -coverprofile=c.out -covermode=atomic ./...
