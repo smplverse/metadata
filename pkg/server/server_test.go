@@ -96,3 +96,51 @@ func TestAddingToMetadataWorks(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, &entry, emptyEntry)
 }
+
+func TestGetInvalidTokenId400(t *testing.T) {
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/asdf", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, `{"error":"invalid token ID"}`, w.Body.String())
+}
+
+func TestPostInvalidTokenId400(t *testing.T) {
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/asdf", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, `{"error":"invalid token ID"}`, w.Body.String())
+}
+
+func TestMissingJsonHeader(t *testing.T) {
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/5", bytes.NewBuffer([]byte(`{}`)))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+}
+
+func TestInvalidBody(t *testing.T) {
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/5", bytes.NewBuffer([]byte(`{`)))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", os.Getenv("METADATA_API_KEY"))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+}

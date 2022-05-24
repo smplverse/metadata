@@ -29,6 +29,11 @@ func SetupRouter() (r *gin.Engine, err error) {
 
 	r.GET("/:tokenId", func(c *gin.Context) {
 		tokenId := c.Param("tokenId")
+		_, err := strconv.Atoi(tokenId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token ID"})
+			return
+		}
 		c.JSON(http.StatusOK, m.Get(tokenId))
 	})
 
@@ -41,6 +46,11 @@ func SetupRouter() (r *gin.Engine, err error) {
 		_, err := strconv.Atoi(tokenId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token ID"})
+			return
+		}
+		if c.Request.Header.Get("Content-Type") != "application/json" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Content-Type must be application/json"})
+			return
 		}
 
 		auth := c.Request.Header.Get("Authorization")
