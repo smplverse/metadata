@@ -4,6 +4,15 @@ const DESCRIPTION = "SMPLverse is a collection of synthetic face data from the c
 
 const PLACEHOLDER_IMAGE = "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1"
 
+var BlankEntry = Entry{
+	TokenId:     "#",
+	Name:        "UNCLAIMED SMPL",
+	Description: DESCRIPTION,
+	ExternalUrl: "",
+	Image:       PLACEHOLDER_IMAGE,
+	Attributes:  []Attribute{},
+}
+
 type Metadata struct {
 	entries map[string]Entry
 }
@@ -36,18 +45,17 @@ var clusteredOnes = []string{
 	"059324",
 }
 
-func (m *Metadata) Get(tokenId string) *Entry {
+func New() *Metadata {
+	return &Metadata{
+		entries: make(map[string]Entry),
+	}
+}
+
+func (m *Metadata) Get(tokenId string) Entry {
 	if entry, ok := m.entries[tokenId]; ok {
-		return &entry
+		return entry
 	}
-	return &Entry{
-		TokenId:     tokenId,
-		Name:        "UNCLAIMED SMPL",
-		Description: DESCRIPTION,
-		ExternalUrl: "",
-		Image:       PLACEHOLDER_IMAGE,
-		Attributes:  []Attribute{},
-	}
+	return BlankEntry
 }
 
 func (m *Metadata) Add(tokenId string, entry Entry) {

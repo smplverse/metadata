@@ -17,7 +17,6 @@ func TestPingRoute(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "ok\n", w.Body.String())
 }
 
 func TestNonExistingMetadata(t *testing.T) {
