@@ -7,7 +7,8 @@ import (
 )
 
 func metadata(c *gin.Context) {
-	c.JSON(200, gin.H{})
+	tokenId := c.Param("tokenId")
+	c.JSON(200, gin.H{"tokenId": tokenId})
 }
 
 func index(c *gin.Context) {
@@ -17,7 +18,7 @@ func index(c *gin.Context) {
 func SetupRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.GET("/metadata", metadata)
+	r.GET("/:tokenId", metadata)
 	r.GET("/", index)
 	return r
 }
