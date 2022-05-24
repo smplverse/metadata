@@ -14,6 +14,18 @@ import (
 
 var ErrUnsetApiKey = errors.New("No METADATA_API_KEY environment variable set")
 
+func validateMetadataEntry(metadataEntry metadata.Entry) bool {
+	invalidTokenId := metadataEntry.TokenId == ""
+	invalidImage := metadataEntry.Image == ""
+	invalidAttrs := len(metadataEntry.Attributes) == 0
+
+	if invalidTokenId || invalidImage || invalidAttrs {
+		return false
+	}
+
+	return true
+}
+
 func SetupRouter() (r *gin.Engine, err error) {
 	gin.SetMode(gin.ReleaseMode)
 
@@ -59,12 +71,7 @@ func SetupRouter() (r *gin.Engine, err error) {
 			return
 		}
 
-		body, err := c.GetRawData()
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		body, _ := c.GetRawData()
 
 		entry := metadata.Entry{}
 		if err := json.Unmarshal(body, &entry); err != nil {
@@ -73,6 +80,12 @@ func SetupRouter() (r *gin.Engine, err error) {
 			return
 		}
 
+		if valid := validateMetadataEntry(entry); !valid {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid entry"})
+			return
+		}
+
+		log.Println(entry)
 		m.Add(tokenId, entry)
 		c.Status(http.StatusCreated)
 	})

@@ -73,8 +73,17 @@ func TestAddingToMetadataWorks(t *testing.T) {
 	assert.Nil(t, err)
 
 	w := httptest.NewRecorder()
-	emptyEntry := &metadata.Entry{}
-	jsonEntry, err := json.Marshal(emptyEntry)
+	mockEntry := &metadata.Entry{
+		TokenId:     "5",
+		Name:        "Name",
+		Description: "Description",
+		ExternalUrl: "ExternalUrl",
+		Image:       "Image",
+		Attributes: []metadata.Attribute{{
+			TraitType: "TraitType", Value: "Value",
+		}},
+	}
+	jsonEntry, err := json.Marshal(mockEntry)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +103,7 @@ func TestAddingToMetadataWorks(t *testing.T) {
 	var entry metadata.Entry
 	err = json.Unmarshal(w.Body.Bytes(), &entry)
 	assert.Nil(t, err)
-	assert.Equal(t, &entry, emptyEntry)
+	assert.Equal(t, &entry, mockEntry)
 }
 
 func TestGetInvalidTokenId400(t *testing.T) {
@@ -138,6 +147,19 @@ func TestInvalidBody(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/5", bytes.NewBuffer([]byte(`{`)))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", os.Getenv("METADATA_API_KEY"))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+}
+
+func TestMissingMetadataFields(t *testing.T) {
+	router, err := server.SetupRouter()
+	assert.Nil(t, err)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/5", bytes.NewBuffer([]byte(`{}`)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", os.Getenv("METADATA_API_KEY"))
 	router.ServeHTTP(w, req)

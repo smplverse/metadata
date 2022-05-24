@@ -19,3 +19,11 @@ func TestGetClaimed(t *testing.T) {
 	got := m.Get("5")
 	assert.Equal(t, got, &want)
 }
+
+func TestAdd(t *testing.T) {
+	m := New()
+	entry := Entry{}
+	m.Add("6", entry)
+	got := m.Get("6")
+	assert.Equal(t, got, &entry)
+}
