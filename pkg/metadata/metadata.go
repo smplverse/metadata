@@ -10,7 +10,7 @@ var BlankEntry = Entry{
 	Description: DESCRIPTION,
 	ExternalUrl: "",
 	Image:       PLACEHOLDER_IMAGE,
-	Attributes:  []Attribute{},
+	Attributes:  []Attribute(nil),
 }
 
 type Metadata struct {
@@ -51,11 +51,11 @@ func New() *Metadata {
 	}
 }
 
-func (m *Metadata) Get(tokenId string) Entry {
+func (m *Metadata) Get(tokenId string) *Entry {
 	if entry, ok := m.entries[tokenId]; ok {
-		return entry
+		return &entry
 	}
-	return BlankEntry
+	return &BlankEntry
 }
 
 func (m *Metadata) Add(tokenId string, entry Entry) {

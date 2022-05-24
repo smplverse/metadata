@@ -6,16 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMetadata_GetUnclaimed(t *testing.T) {
+func TestGetUnclaimed(t *testing.T) {
 	m := New()
 	entry := m.Get("4")
-	assert.Equal(t, entry, BlankEntry)
+	assert.Equal(t, entry, &BlankEntry)
 }
 
-func TestMetadata_GetClaimed(t *testing.T) {
+func TestGetClaimed(t *testing.T) {
 	m := New()
 	want := Entry{}
 	m.entries["5"] = want
 	got := m.Get("5")
-	assert.Equal(t, got, want)
+	assert.Equal(t, got, &want)
 }
