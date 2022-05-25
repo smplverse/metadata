@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: localhost
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
@@ -36,12 +35,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metadata.smplverse.xyz
+  name: smplverse-metadata
 spec:
   selector:
     matchLabels:
       name: metadata-api
-  replicas: 5
+  replicas: 2
   template:
       metadata:
         labels:

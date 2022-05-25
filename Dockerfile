@@ -9,4 +9,4 @@ WORKDIR /root
 COPY --from=builder /build/app ./
 
 EXPOSE 80
-CMD [ "./app" ]
+CMD [ "/root/app" ]
