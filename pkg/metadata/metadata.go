@@ -52,6 +52,7 @@ func New() *Metadata {
 }
 
 func (m *Metadata) Get(tokenId string) *Entry {
+	// TODO add cap of tokenId <= totalSupply
 	if entry, ok := m.entries[tokenId]; ok {
 		return &entry
 	}
