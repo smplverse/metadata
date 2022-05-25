@@ -1,0 +1,60 @@
+# TODO use tls and use domain
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress.smplverse.xyz
+  namespace: default
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: metadata-api-port
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metadata-api-port
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    name: metadata-api
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metadata.smplverse.xyz
+spec:
+  selector:
+    matchLabels:
+      name: metadata-api
+  replicas: 5
+  template:
+      metadata:
+        labels:
+          name: metadata-api
+      spec:
+        containers:
+          - name: metadata-api
+            image: piotrostr/metadata
+            envFrom:
+              - secretRef:
+                  name: metadata-api-key
+            ports:
+              - containerPort: 80
+        imagePullSecrets:
+          - name: regcred
+        restartPolicy: Always
