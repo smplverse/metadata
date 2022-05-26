@@ -36,15 +36,20 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    container: golang
 
     services:
       redis:
+        ports:
+          - 6379
         image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-
     - name: Check out
       uses: actions/checkout@v3
 
@@ -55,6 +60,7 @@ jobs:
       run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
       env:
         REDIS_HOST: redis
+        REDIS_PORT: 6379
 
     - name: Upload coverage to Codecov
       run: bash <(curl -s https://codecov.io/bash)
