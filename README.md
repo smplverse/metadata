@@ -47,8 +47,14 @@ cd ..
    ```sh
    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml
    ```
+   
+5. Add secret (required env var for the metadata api)
 
-5. Apply the configuration
+   ```sh
+   kubectl create secret generic metadata-api-key --from-literal METADATA_API_KEY=[secret]
+   ```
+
+6. Apply the configuration
 
    ```sh
    kubectl apply -f manifest.yaml
