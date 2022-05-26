@@ -19,7 +19,7 @@ export KUBECONFIG=~/.kube/lke.yaml
 cd ..
 ```
 
-### Install `ingress-nginx` and get a CA-verified certificate
+### Deploy to the cluster
 
 1. Install ingress
 
@@ -57,5 +57,9 @@ cd ..
 6. Apply the configuration
 
    ```sh
-   kubectl apply -f manifest.yaml
+   skaffold manifest.yaml
    ```
+   
+   I prefer `skaffold` to `kubectl` for applying deployments as it waits
+   for them to stabilise and exits with error code 1 in case any container 
+   fails.
