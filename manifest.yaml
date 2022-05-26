@@ -60,7 +60,7 @@ spec:
   selector:
     matchLabels:
       name: metadata-api
-  replicas: 10
+  replicas: 3
   template:
       metadata:
         labels:
@@ -77,3 +77,56 @@ spec:
         imagePullSecrets:
           - name: regcred
         restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-port
+  labels:
+    name: db-port
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    name: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-volume
+  labels:
+    name: db-volume
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  selector:
+    matchLabels:
+      name: db
+  replicas: 1
+  template:
+      metadata:
+        labels:
+          name: db
+      spec:
+        containers:
+          - name: db-container
+            image: redis
+            ports:
+              - containerPort: 6379
+            volumeMounts:
+              - mountPath: /data
+                name: db-volume
+        imagePullSecrets:
+          - name: regcred
+        volumes:
+          - name: db-volume
+            persistentVolumeClaim:
+              claimName: db-volume
