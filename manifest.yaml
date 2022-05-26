@@ -1,13 +1,32 @@
-# TODO use tls and use domain
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+ name: letsencrypt
+spec:
+ acme:
+   server: https://acme-v02.api.letsencrypt.org/directory
+   email: piotr.jp.ostrowski@gmail.com
+   privateKeySecretRef:
+     name: letsencrypt
+   solvers:
+   - http01:
+       ingress:
+         class: nginx
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress.smplverse.xyz
+  name: ingress-smplverse
   namespace: default
   annotations:
-    ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/issuer: letsencrypt
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - metadata.smplverse.xyz
+      secretName: ingress-smplverse-tls
   rules:
     - http:
         paths:

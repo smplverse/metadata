@@ -4,6 +4,8 @@ variable "k8s_version" {}
 
 variable "label" {}
 
+variable "lb-label" {}
+
 variable "region" {}
 
 variable "pools" {

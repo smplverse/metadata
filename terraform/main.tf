@@ -1,3 +1,21 @@
+/* it would be really cool if this worked out of the box, for helm though kubectl 
+ needs the cluster context to be set and I can't think of a way to do that hassleless
+resource "linode_nodebalancer" "smplverse-lb" {
+  region = var.region
+  label = var.lb-label
+}
+
+module "nginx-controller" {
+  source = "terraform-iaac/nginx-controller/helm"
+  ip_address = linode_nodebalancer.smplverse-lb.ipv4
+
+  depends_on = [
+    linode_nodebalancer.smplverse-lb,
+    linode_lke_cluster.smplverse
+  ]
+}
+*/
+
 resource "linode_lke_cluster" "smplverse" {
     k8s_version = var.k8s_version
     label = var.label
