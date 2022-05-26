@@ -14,18 +14,6 @@ import (
 
 var ErrUnsetApiKey = errors.New("No METADATA_API_KEY environment variable set")
 
-func validateMetadataEntry(metadataEntry metadata.Entry) bool {
-	invalidTokenId := metadataEntry.TokenId == ""
-	invalidImage := metadataEntry.Image == ""
-	invalidAttrs := len(metadataEntry.Attributes) == 0
-
-	if invalidTokenId || invalidImage || invalidAttrs {
-		return false
-	}
-
-	return true
-}
-
 func SetupRouter() (r *gin.Engine, err error) {
 	gin.SetMode(gin.ReleaseMode)
 
@@ -46,7 +34,9 @@ func SetupRouter() (r *gin.Engine, err error) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token ID"})
 			return
 		}
-		c.JSON(http.StatusOK, m.Get(tokenId))
+		entry, _ := m.Get(tokenId)
+		// TODO handle error above
+		c.JSON(http.StatusOK, entry)
 	})
 
 	r.GET("/", func(c *gin.Context) {
@@ -74,19 +64,18 @@ func SetupRouter() (r *gin.Engine, err error) {
 		body, _ := c.GetRawData()
 
 		entry := metadata.Entry{}
+		// handling of the below can be dropped for the sake of handling m.Add
 		if err := json.Unmarshal(body, &entry); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		if valid := validateMetadataEntry(entry); !valid {
+		err = m.Add(tokenId, entry)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid entry"})
 			return
 		}
-
-		log.Println(entry)
-		m.Add(tokenId, entry)
 		c.Status(http.StatusCreated)
 	})
 
