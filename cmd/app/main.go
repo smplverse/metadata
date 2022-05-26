@@ -14,11 +14,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	port := *flag.String("port", "80", "port to listen on")
+	port := flag.String("port", "80", "port to listen on")
 	flag.Parse()
 
-	log.Printf("running on :%s\n", port)
-	if err := router.Run(fmt.Sprintf(":%s", port)); err != nil {
+	log.Printf("running on :%s\n", *port)
+	if err := router.Run(fmt.Sprintf(":%s", *port)); err != nil {
 		log.Fatalln(err)
 	}
 }

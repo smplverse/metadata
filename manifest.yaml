@@ -19,7 +19,7 @@ metadata:
   name: ingress-smplverse
   namespace: default
   annotations:
-    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/ssl-redirect: "false"
     cert-manager.io/issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
@@ -28,7 +28,8 @@ spec:
         - metadata.smplverse.xyz
       secretName: ingress-smplverse-tls
   rules:
-    - http:
+    - host: metadata.smplverse.xyz
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -59,7 +60,7 @@ spec:
   selector:
     matchLabels:
       name: metadata-api
-  replicas: 2
+  replicas: 10
   template:
       metadata:
         labels:
@@ -67,7 +68,7 @@ spec:
       spec:
         containers:
           - name: metadata-api
-            image: piotrostr/metadata
+            image: docker.io/piotrostr/metadata
             envFrom:
               - secretRef:
                   name: metadata-api-key
