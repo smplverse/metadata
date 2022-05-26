@@ -1,8 +1,17 @@
 package metadata
 
+import (
+	"context"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/piotrostr/metadata/pkg/db"
+)
+
 const DESCRIPTION = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
 
 const PLACEHOLDER_IMAGE = "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1"
+
+var ctx = context.Background()
 
 var BlankEntry = Entry{
 	TokenId:     "#",
@@ -15,6 +24,7 @@ var BlankEntry = Entry{
 
 type Metadata struct {
 	entries map[string]Entry
+	rdb     *redis.Client
 }
 
 type Entry struct {
@@ -48,6 +58,7 @@ var _ = []string{
 func New() *Metadata {
 	return &Metadata{
 		entries: make(map[string]Entry),
+		rdb:     db.Client(),
 	}
 }
 
