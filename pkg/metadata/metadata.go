@@ -11,7 +11,7 @@ const DESCRIPTION = "SMPLverse is a collection of synthetic face data from the c
 
 const PLACEHOLDER_IMAGE = "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1"
 
-var ctx = context.Background()
+var _ = context.Background()
 
 var BlankEntry = Entry{
 	TokenId:     "#",

@@ -5,11 +5,9 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: golang
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-
-    - name: Check out code into the Go module directory
+    - name: Check out
       uses: actions/checkout@v3
 
     - name: Install dependencies
@@ -20,11 +18,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    container: golang
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-
-    - name: Check out code into the Go module directory
+    - name: Check out
       uses: actions/checkout@v3
 
     - name: Install dependencies
@@ -38,14 +34,18 @@ jobs:
         go vet ./...
         golangci-lint run
 
-
   test:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+
     steps:
     - name: Set up Go
       uses: actions/setup-go@v3
 
-    - name: Check out code into the Go module directory
+    - name: Check out
       uses: actions/checkout@v3
 
     - name: Install dependencies
@@ -53,6 +53,8 @@ jobs:
 
     - name: Run tests
       run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+      env:
+        REDIS_HOST: redis
 
     - name: Upload coverage to Codecov
       run: bash <(curl -s https://codecov.io/bash)
