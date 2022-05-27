@@ -4,6 +4,28 @@
 [![codecov](https://codecov.io/gh/piotrostr/metadata/branch/master/graph/badge.svg?token=bJwa6Sf4Z7)](https://codecov.io/gh/piotrostr/metadata)
 [![CICD](https://github.com/piotrostr/metadata/actions/workflows/main.yml/badge.svg)](https://github.com/piotrostr/metadata/actions)
 
+Simple and fast server that serves the NFTs written in Go.
+
+## Usage
+
+```
+go run ./... --port [port]
+```
+
+Enpoints:
+
+   - `GET /:tokenId` to get a metadata entry
+   - `POST /:tokenId` to add an entry (requires `Authorization: [METADATA_API_KEY]` header)
+   - `GET /` for healthchecks, returns empty 200 OK
+
+## Under the hood
+
+Server uses Gin (gin-gonic) framework for serving metadata stored in Redis database as JSON.
+Deployment is onto a cluster provisioned from Linode. The format complies to the opensea.io
+metadata standards and employs NGINX ingress with TLS certificates from lets-encrypt through 
+cert-manager.io. The API packed into a docker image of piotrostr/metadata is deployed aside 
+a Redis image.
+
 ## Deployment
 
 Note: The steps are user-specific since there is a number of variables like
