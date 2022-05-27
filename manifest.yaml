@@ -92,15 +92,31 @@ spec:
     name: db
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: db-volume
+  name: db-pvc
   labels:
-    name: db-volume
+    name: db-pvc
 spec:
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
+  resources:
+    requests:
+      storage: "256Mi"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -116,6 +132,10 @@ spec:
         labels:
           name: db
       spec:
+        volumes:
+          - name: db-storage
+            persistentVolumeClaim:
+              claimName: db-pvc
         containers:
           - name: db-container
             image: redis
@@ -123,10 +143,4 @@ spec:
               - containerPort: 6379
             volumeMounts:
               - mountPath: /data
-                name: db-volume
-        imagePullSecrets:
-          - name: regcred
-        volumes:
-          - name: db-volume
-            persistentVolumeClaim:
-              claimName: db-volume
+                name: db-storage
