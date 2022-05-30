@@ -8,23 +8,24 @@ Simple and fast server that serves the NFTs written in Go.
 
 ## Usage
 
-```
+```bash
 go run ./... --port [port]
 ```
 
 Enpoints:
 
-   - `GET /:tokenId` to get a metadata entry
-   - `POST /:tokenId` to add an entry (requires `Authorization: [METADATA_API_KEY]` header)
-   - `GET /` for healthchecks, returns empty 200 OK
+- `GET /:tokenId` to get a metadata entry
+- `POST /:tokenId`
+  to add an entry (requires `Authorization: [METADATA_API_KEY]` header)
+- `GET /` for healthchecks, returns empty 200 OK
 
 ## Under the hood
 
-Server uses Gin (gin-gonic) framework for serving metadata stored in Redis database as JSON.
-Deployment is onto a cluster provisioned from Linode. The format complies to the opensea.io
-metadata standards and employs NGINX ingress with TLS certificates from lets-encrypt through 
-cert-manager.io. The API packed into a docker image of piotrostr/metadata is deployed aside 
-a Redis image.
+Server uses Gin (gin-gonic) framework for serving metadata stored in Redis
+database as JSON. Deployment is onto a cluster provisioned from Linode. The
+format complies to the opensea.io metadata standards and employs NGINX ingress
+with TLS certificates from lets-encrypt through cert-manager.io. The API packed
+into a docker image of piotrostr/metadata is deployed aside a Redis image.
 
 ## Deployment
 
@@ -35,10 +36,10 @@ walkthrough-tutorial or local setup.
 ### Provision the cluster
 
 ```sh
-cd terraform && terraform apply
+cd terraform/linode && terraform apply
 terraform output kubeconfig | jq -r '@base64d' > ~/.kube/lke.yaml
 export KUBECONFIG=~/.kube/lke.yaml
-cd ..
+cd -
 ```
 
 ### Deploy to the cluster
@@ -69,7 +70,7 @@ cd ..
    ```sh
    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml
    ```
-   
+
 5. Add secret (required env var for the metadata api)
 
    ```sh
@@ -81,7 +82,7 @@ cd ..
    ```sh
    skaffold manifest.yaml
    ```
-   
+
    I prefer `skaffold` to `kubectl` for applying deployments as it waits
-   for them to stabilise and exits with error code 1 in case any container 
+   for them to stabilise and exits with error code 1 in case any container
    fails.
