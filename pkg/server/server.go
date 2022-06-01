@@ -12,7 +12,7 @@ import (
 	"github.com/piotrostr/metadata/pkg/metadata"
 )
 
-var ErrUnsetApiKey = errors.New("No METADATA_API_KEY environment variable set")
+var ErrUnsetApiKey = errors.New("no METADATA_API_KEY environment variable set")
 
 func SetupRouter() (r *gin.Engine, err error) {
 	gin.SetMode(gin.ReleaseMode)

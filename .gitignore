@@ -13,3 +13,4 @@ override.tf.json
 terraform.rcmplverse-metadata
 c.out
 dump.rdb
+main
