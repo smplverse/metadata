@@ -45,7 +45,14 @@ func TestNonExistingMetadata(t *testing.T) {
 	var entry metadata.Entry
 	err = json.Unmarshal(w.Body.Bytes(), &entry)
 	assert.Nil(t, err)
-	assert.Equal(t, &entry, &metadata.BlankEntry)
+	assert.Equal(t, &entry, &metadata.Entry{
+		TokenId:     "#",
+		Name:        "",
+		Description: "",
+		ExternalUrl: "",
+		Image:       "",
+		Attributes:  []metadata.Attribute(nil),
+	})
 }
 
 func Test401ForUnauthorized(t *testing.T) {

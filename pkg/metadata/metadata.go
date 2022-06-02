@@ -4,28 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/piotrostr/metadata/pkg/config"
 	"github.com/piotrostr/metadata/pkg/db"
 )
 
-const DESCRIPTION = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
-
-const PLACEHOLDER_IMAGE = "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1"
-
 var ctx = context.Background()
 
-var BlankEntry = Entry{
-	TokenId:     "#",
-	Name:        "UNCLAIMED SMPL",
-	Description: DESCRIPTION,
-	ExternalUrl: "",
-	Image:       PLACEHOLDER_IMAGE,
-	Attributes:  []Attribute(nil),
-}
-
 type Metadata struct {
-	rdb *redis.Client
+	rdb  *redis.Client
+	base config.Base
 }
 
 // TODO use default values for description, image and extUrl
@@ -58,8 +48,18 @@ var _ = []string{
 }
 
 func New() *Metadata {
+	rdb := db.Client()
+
+	base, err := config.Get()
+	if err != nil {
+		log.Println("Error getting config: ", err)
+		log.Println("Using default")
+	}
+
+	// if there is no config will return zeros for the given fields
 	return &Metadata{
-		rdb: db.Client(),
+		rdb:  rdb,
+		base: base,
 	}
 }
 
@@ -78,8 +78,16 @@ func ValidateMetadataEntry(metadataEntry Entry) bool {
 func (m *Metadata) Get(tokenId string) (entry *Entry, err error) {
 	entryString, err := m.rdb.Get(ctx, tokenId).Result()
 	if err == redis.Nil {
-		entry = &BlankEntry
-		return entry, nil
+		entry = &Entry{
+			TokenId:     "#",
+			Name:        m.base.Name,
+			Description: m.base.Description,
+			ExternalUrl: m.base.ExternalUrl,
+			Image:       m.base.Image,
+			Attributes:  []Attribute(nil),
+		}
+		err = nil
+		return
 	}
 
 	var entryObj Entry

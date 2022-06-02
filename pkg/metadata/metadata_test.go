@@ -12,7 +12,13 @@ func TestGetUnclaimed(t *testing.T) {
 	m.rdb.Del(ctx, "4")
 	entry, err := m.Get("4")
 	assert.Nil(t, err)
-	assert.Equal(t, entry, &BlankEntry)
+	assert.Equal(t, entry, &Entry{
+		TokenId:     "#",
+		Name:        "",
+		Description: "",
+		ExternalUrl: "",
+		Image:       "",
+	})
 }
 
 func TestGetInvalid(t *testing.T) {
