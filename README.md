@@ -1,4 +1,4 @@
-# metadata
+# GoData
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/piotrostr/metadata)](https://goreportcard.com/report/github.com/piotrostr/metadata)
 [![codecov](https://codecov.io/gh/piotrostr/metadata/branch/master/graph/badge.svg?token=bJwa6Sf4Z7)](https://codecov.io/gh/piotrostr/metadata)
@@ -29,9 +29,21 @@ into a docker image of piotrostr/metadata is deployed aside a Redis image.
 
 ## Deployment
 
-Note: The steps are user-specific since there is a number of variables like
+1. The configuration file `config.json` is required for production deployments.
+
+   | field               | value                             |
+   | ------------------- | --------------------------------- |
+   | `name`              | Collection name                   |
+   | `description`       | Description                       |
+   | `external_url`      | GS/S3/.. URL for placholder image |
+   | `placeholder_image` | IPFS url for placeholder image    |
+
+2. Redis Database is also required, without it the data endpoints return
+   `nil`.
+
+_Note: The steps are user-specific since there is a number of variables like
 certificate issuer email etc, the steps are more of guidelines rather than
-walkthrough-tutorial or local setup.
+walkthrough-tutorial or local setup._
 
 ### Provision the cluster
 
