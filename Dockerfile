@@ -1,4 +1,4 @@
-FROM golang as builder
+FROM amd64/golang as builder
 WORKDIR /build
 COPY . .
 RUN CGO_ENABLED=0 go build -o app ./cmd/app/main.go
