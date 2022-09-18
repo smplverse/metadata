@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 
 	"cloud.google.com/go/storage"
 )
 
-type Metadata []MetadataEntry
+type Metadata map[string]MetadataEntry
 
 type MetadataEntry struct {
 	TokenID     string      `json:"token_id"`
@@ -44,6 +45,7 @@ func Get(ctx context.Context) (Metadata, error) {
 		return nil, err
 	}
 
+	log.Println(string(buf[:30]))
 	var metadata Metadata
 	err = json.Unmarshal(buf, &metadata)
 	if err != nil {

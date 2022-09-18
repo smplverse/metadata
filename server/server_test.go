@@ -12,7 +12,7 @@ import (
 func TestServer(t *testing.T) {
 	t.Run("serves metadata right", func(t *testing.T) {
 		metadata := data.Metadata{
-			{
+			"1": {
 				TokenID:     "1",
 				Name:        "name",
 				Description: "description",
