@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"encoding/json"
+	"io"
 
 	"cloud.google.com/go/storage"
 )
@@ -38,8 +39,8 @@ func Get(ctx context.Context) (Metadata, error) {
 	}
 	defer reader.Close()
 
-	buf := make([]byte, reader.Size())
-	if _, err := reader.Read(buf); err != nil {
+	buf, err := io.ReadAll(reader)
+	if err != nil {
 		return nil, err
 	}
 
