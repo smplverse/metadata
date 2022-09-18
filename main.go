@@ -7,80 +7,41 @@ import (
 	"log"
 	"net/http"
 
-	"cloud.google.com/go/storage"
+	"github.com/smplverse/metadata/data"
 )
+
+func serve(metadata data.Metadata, port string) error {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		buf, err := json.Marshal(metadata)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(buf)
+	})
+
+	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 var ctx = context.Background()
 
-type Metadata []MetadataEntry
-
-type MetadataEntry struct {
-	TokenID     string      `json:"token_id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Image       string      `json:"image"`
-	ExternalURL string      `json:"external_url"`
-	IPFSURL     string      `json:"ipfs_url"`
-	Attributes  []Attribute `json:"attributes"`
-}
-
-type Attribute struct {
-	TraitType string
-	Value     string
-}
-
-func getMetadata() (Metadata, error) {
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	obj := client.Bucket("smplverse").Object("metadata.json")
-
-	reader, err := obj.NewReader(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer reader.Close()
-
-	buf := make([]byte, reader.Size())
-	if _, err := reader.Read(buf); err != nil {
-		return nil, err
-	}
-
-	var metadata Metadata
-	err = json.Unmarshal(buf, &metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return metadata, nil
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	metadata, err := getMetadata()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-	}
-
-	buf, err := json.Marshal(metadata)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(buf)
-}
-
 func main() {
-	log.Print("starting server...")
-	http.HandleFunc("/", handler)
+	log.Print("fetching metadata from google storage")
+	metadata, err := data.Get(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	port := 8080
-	log.Printf("listening on port %d", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+	port := "8080"
+	log.Print("starting server on port 8080")
+	err = serve(metadata, port)
+	if err != nil {
 		log.Fatal(err)
 	}
 }
