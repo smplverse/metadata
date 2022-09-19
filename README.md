@@ -31,3 +31,9 @@ gcloud compute addresses describe $PROJECT_ID-ip \
     --global \
     --format 'value(address)'
 ```
+
+In order to add a redirect from HTTP to HTTPS:
+
+```sh
+./hack/setup-http-to-https-redirect.sh
+```
