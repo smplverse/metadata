@@ -1,6 +1,11 @@
 #!/bin/bash
 
 PROJECT_ID=smplverse
+US_REGION=us-central1
+EU_REGION=europe-west1
+DOMAIN=metadata.$PROJECT_ID.xyz
+CLOUD_RUN_US=$PROJECT_ID-metadata-$US_REGION
+CLOUD_RUN_EU=$PROJECT_ID-metadata-$EU_REGION
 
 gcloud config set project $PROJECT_ID
 
@@ -17,7 +22,7 @@ gcloud compute url-maps create $PROJECT_ID-urlmap \
     --default-service=$PROJECT_ID-backend
 
 gcloud compute ssl-certificates create $PROJECT_ID-cert \
-    --domains=$PROJECT_ID.xyz
+    --domains=$DOMAIN
 
 gcloud compute target-https-proxies create $PROJECT_ID-https \
     --ssl-certificates=$PROJECT_ID-cert \
@@ -30,11 +35,10 @@ gcloud compute forwarding-rules create $PROJECT_ID-load-balancer \
     --address=$PROJECT_ID-ip
 
 # add endpoint in us-central1
-US_REGION=us-central1
 gcloud compute network-endpoint-groups create $PROJECT_ID-neg-$US_REGION \
     --region=$US_REGION \
     --network-endpoint-type=SERVERLESS \
-    --cloud-run-service=$PROJECT_ID-metadata-$US_REGION
+    --cloud-run-service=$CLOUD_RUN_US
 
 gcloud compute backend-services add-backend $PROJECT_ID-backend \
     --global \
@@ -42,11 +46,10 @@ gcloud compute backend-services add-backend $PROJECT_ID-backend \
     --network-endpoint-group=$PROJECT_ID-neg-$US_REGION
 
 # add endpoint in europe-west1
-EU_REGION=europe-west1
 gcloud compute network-endpoint-groups create $PROJECT_ID-neg-$EU_REGION \
     --region=$EU_REGION \
     --network-endpoint-type=SERVERLESS \
-    --cloud-run-service=$PROJECT_ID-metadata-$EU_REGION
+    --cloud-run-service=$CLOUD_RUN_EU
 
 gcloud compute backend-services add-backend $PROJECT_ID-backend \
     --global \
