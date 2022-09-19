@@ -33,10 +33,21 @@ func Handle(metadata data.Metadata) httprouter.Handle {
 
 func Serve(metadata data.Metadata, port string) error {
 	router := httprouter.New()
+
+	router.GET("/", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "smplverse/metadata")
+	})
+	router.GET("/healthz", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "im healthy")
+	})
 	router.GET("/:tokenID", Handle(metadata))
+
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), router)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
