@@ -31,9 +31,9 @@ func TestServer(t *testing.T) {
 		}
 
 		router := httprouter.New()
-		router.GET("/:tokenID", Handle(metadata))
+		router.GET("/v1/:tokenID", Handle(metadata))
 
-		req, err := http.NewRequest("GET", "/1", nil)
+		req, err := http.NewRequest("GET", "/v1/1", nil)
 		if err != nil {
 			t.Fatal(err)
 		}

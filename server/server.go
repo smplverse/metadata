@@ -42,7 +42,7 @@ func Serve(metadata data.Metadata, port string) error {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "im healthy")
 	})
-	router.GET("/:tokenID", Handle(metadata))
+	router.GET("/v1/:tokenID", Handle(metadata))
 
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), router)
 	if err != nil {
