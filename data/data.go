@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 
 	"cloud.google.com/go/storage"
 )
@@ -45,7 +44,6 @@ func Get(ctx context.Context) (Metadata, error) {
 		return nil, err
 	}
 
-	log.Println(string(buf[:30]))
 	var metadata Metadata
 	err = json.Unmarshal(buf, &metadata)
 	if err != nil {

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/smplverse/metadata/data"
 )
 
-func Handler(metadata data.Metadata) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Handle(metadata data.Metadata) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		buf, err := json.Marshal(metadata)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -22,8 +23,9 @@ func Handler(metadata data.Metadata) http.HandlerFunc {
 }
 
 func Serve(metadata data.Metadata, port string) error {
-	http.HandleFunc("/", Handler(metadata))
-	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	router := httprouter.New()
+	router.GET("/:tokenID", Handle(metadata))
+	err := http.ListenAndServe(fmt.Sprintf(":%s", port), router)
 	if err != nil {
 		return err
 	}

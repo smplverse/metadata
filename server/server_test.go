@@ -3,8 +3,11 @@ package server
 import (
 	"encoding/json"
 	"io"
+	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/julienschmidt/httprouter"
 
 	"github.com/smplverse/metadata/data"
 )
@@ -27,23 +30,27 @@ func TestServer(t *testing.T) {
 			},
 		}
 
-		srv := httptest.NewServer(Handler(metadata))
-		defer srv.Close()
+		router := httprouter.New()
+		router.GET("/:tokenID", Handle(metadata))
 
-		res, err := srv.Client().Get(srv.URL + "/")
+		req, err := http.NewRequest("GET", "/1", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
+		rr := httptest.NewRecorder()
 
-		if res.StatusCode != 200 {
-			t.Fatalf("expected status code 200, got %d", res.StatusCode)
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != 200 {
+			t.Fatalf("expected status code 200, got %d", rr.Code)
 		}
 
-		if res.Header.Get("Content-Type") != "application/json" {
-			t.Fatalf("expected content type application/json, got %s", res.Header.Get("Content-Type"))
+		contentType := rr.Header().Get("Content-Type")
+		if contentType != "application/json" {
+			t.Fatalf("expected content type application/json, got %s", contentType)
 		}
 
-		got, err := io.ReadAll(res.Body)
+		got, err := io.ReadAll(rr.Body)
 		if err != nil {
 			t.Fatal(err)
 		}
