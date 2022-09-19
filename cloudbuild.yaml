@@ -16,5 +16,27 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'push', 'gcr.io/smplverse/metadata' ]
 
+# deploy to us-central1
+- name: 'gcr.io/cloud-builders/cloud-sdk'
+  args: 
+    - run
+    - deploy
+    - smplverse-metadata-us-central1
+    - --image gcr.io/smplverse/metadata
+    - --region us-central1 
+    - --allow-unauthenticated 
+    - --async
+
+# deploy to europe-west1
+- name: 'gcr.io/cloud-builders/cloud-sdk'
+  args: 
+    - run
+    - deploy
+    - smplverse-metadata-europe-west1
+    - --image gcr.io/smplverse/metadata
+    - --region europe-west1 
+    - --allow-unauthenticated 
+    - --async
+
 images:
 - 'gcr.io/smplverse/metadata'
