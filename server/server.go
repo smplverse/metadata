@@ -11,11 +11,20 @@ import (
 
 func Handle(metadata data.Metadata) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		buf, err := json.Marshal(metadata)
+		tokenId := ps.ByName("tokenID")
+		metadataEntry, ok := metadata[tokenId]
+		if !ok {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		buf, err := json.Marshal(metadataEntry)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			w.Write([]byte(err.Error())) // nolint: errcheck
+			return
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, string(buf))

@@ -55,7 +55,7 @@ func TestServer(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		want, err := json.Marshal(metadata)
+		want, err := json.Marshal(metadata["1"])
 		if err != nil {
 			t.Fatal(err)
 		}
