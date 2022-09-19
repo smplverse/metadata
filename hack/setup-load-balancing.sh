@@ -38,7 +38,7 @@ gcloud compute network-endpoint-groups create $PROJECT_ID-neg-$US_REGION \
 gcloud compute backend-services add-backend $PROJECT_ID-backend \
     --global \
     --network-endpoint-group-region=$US_REGION \
-    --network-endpoint-group=$PROJECT_ID-neg 
+    --network-endpoint-group=$PROJECT_ID-neg-$US_REGION
 
 # add endpoint in europe-west1
 EU_REGION=europe-west1
@@ -50,4 +50,4 @@ gcloud compute network-endpoint-groups create $PROJECT_ID-neg-$EU_REGION \
 gcloud compute backend-services add-backend $PROJECT_ID-backend \
     --global \
     --network-endpoint-group-region=$EU_REGION \
-    --network-endpoint-group=$PROJECT_ID-neg
+    --network-endpoint-group=$PROJECT_ID-neg-$EU_REGION
