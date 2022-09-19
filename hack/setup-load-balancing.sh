@@ -10,6 +10,7 @@ gcloud compute addresses create $PROJECT_ID-ip \
     --global
 
 gcloud compute backend-services create $PROJECT_ID-backend \
+    --load-balancing-scheme=EXTERNAL \
     --global 
 
 gcloud compute url-maps create $PROJECT_ID-urlmap \
